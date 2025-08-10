@@ -10,28 +10,21 @@ const EmployeeTable = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        // We are using JSONPlaceholder for mock user data.
-        const API_ENDPOINT = "https://jsonplaceholder.typicode.com/users";
+        // Point to the local Spring Boot backend API
+        // It's good practice to use environment variables for API endpoints
+        const API_ENDPOINT = import.meta.env.VITE_API_URL || "http://localhost:8080/api/employees";
 
-        // reqres.in is a mock API and doesn't require authorization.
         const response = await fetch(API_ENDPOINT);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const jsonResponse = await response.json();
-
-        // The API returns an array of users directly.
-        // We also map the keys to match what our EmployeeRow component expects.
-        const formattedEmployees = jsonResponse.map((user) => ({
-          id: user.id,
-          firstName: user.name.split(" ")[0],
-          lastName: user.name.split(" ").slice(1).join(" "),
-          email: user.email,
-        }));
-        setEmployees(formattedEmployees);
+        const employeesData = await response.json();
+        setEmployees(employeesData);
       } catch (e) {
-        setError(e.message);
+        // More robust error handling
+        const errorMessage = e instanceof Error ? e.message : "An unknown error occurred";
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
