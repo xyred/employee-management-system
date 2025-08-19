@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import EmployeeRow from "./EmployeeRow";
+import AddEmployeeForm from "./AddEmployeeForm";
 import "./EmployeeTable.css";
 
 const EmployeeTable = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -41,22 +43,44 @@ const EmployeeTable = () => {
     return <div className="error">Error: {error}</div>;
   }
 
+  const handleAddEmployee = (newEmployee) => {
+    setEmployees(prevEmployees => [...prevEmployees, newEmployee]);
+  };
+
   return (
-    <table className="employee-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Email</th>
-        </tr>
-      </thead>
-      <tbody>
-        {employees.map((employee) => (
-          <EmployeeRow key={employee.id} employee={employee} />
-        ))}
-      </tbody>
-    </table>
+    <div className="employee-table-container">
+      <div className="table-header">
+        <h2>Employees</h2>
+        <button 
+          className="add-employee-button"
+          onClick={() => setIsAddEmployeeModalOpen(true)}
+        >
+          Add Employee
+        </button>
+      </div>
+      <table className="employee-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          {employees.map((employee) => (
+            <EmployeeRow key={employee.id} employee={employee} />
+          ))}
+        </tbody>
+      </table>
+      
+      {isAddEmployeeModalOpen && (
+        <AddEmployeeForm
+          onClose={() => setIsAddEmployeeModalOpen(false)}
+          onSubmit={handleAddEmployee}
+        />
+      )}
+    </div>
   );
 };
 
